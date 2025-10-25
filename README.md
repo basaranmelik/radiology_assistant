@@ -1,1 +1,1 @@
-# radiology_assistant
+# radiology_analyst
