@@ -8,6 +8,8 @@ def should_contiune(state:GraphState)->GraphState:
         return "extract_mri"
     elif state["form_type"]=="blood_test":
         return "extract_blood_test"
+    elif state["form_type"]=="ust_batin_bt":
+        return "extract_ust_batin_bt"
     else:
         return "handle_error"
     
@@ -16,6 +18,7 @@ graph = StateGraph(GraphState)
 graph.add_node("router",node_router)
 graph.add_node("extract_mri",node_extract_mri)
 graph.add_node("extract_blood_test",node_extract_blood_test)
+graph.add_node("extract_ust_batin_bt",node_extract_ust_batin_bt)
 graph.add_node("handle_error",node_handle_error)
 
 graph.set_entry_point("router")
@@ -26,6 +29,7 @@ graph.add_conditional_edges(
     {
         "extract_mri":"extract_mri",
         "extract_blood_test":"extract_blood_test",
+        "extract_ust_batin_bt":"extract_ust_batin_bt",
         "handle_error":"handle_error",        
     }
 )

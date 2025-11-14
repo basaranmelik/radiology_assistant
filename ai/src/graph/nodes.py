@@ -1,6 +1,6 @@
 from graph.state import GraphState
 from tools.llm_calls import get_llm, get_routing_chain, get_extraction_chain
-from schemas.form_schemas import FormBloodTest, FormMRI
+from schemas.form_schemas import FormUstBatinBT
 
 llm = get_llm()
 
@@ -23,9 +23,10 @@ def node_router(state: GraphState) -> dict:
     Görevin, sana verilen metin bloğunun konusunu analiz edip, aşağıdaki üç kategoriden hangisine ait olduğunu belirlemektir.
 
     KATEGORİLER:
-    - 'mri': Eğer metin ağırlıklı olarak MR (Manyetik Rezonans) sonuçları, bulguları, raporları veya ilgili terimler (örn: lezyon, disk hernisi, kontrast tutulumu) içeriyorsa.
-    - 'blood_test': Eğer metin ağırlıklı olarak kan tahlili sonuçları, kan değerleri veya ilgili terimler (örn: hemoglobin, WBC, lökosit, CRP, platelet) içeriyorsa.
-    - 'undefined': Eğer metin bu iki kategoriye de girmiyorsa veya tıbbi bir içerik değilse.
+    - 'mri': Eğer metin ağırlıklı olarak MR (Manyetik Rezonans) sonuçları, bulguları veya raporları içeriyorsa.
+    - 'blood_test': Eğer metin ağırlıklı olarak kan tahlili sonuçları veya kan değerleri içeriyorsa.
+    - 'ust_batin_bt': Eğer metin Üst Batın BT raporuna ait bulgular, organ tanımları veya sonuçlar içeriyorsa (ör. karaciğer, safra kesesi, pankreas, dalak, böbrekler, sürrenal, intraabdominal sıvı, serbest hava).
+    - 'undefined': Eğer metin bu kategorilere girmiyorsa veya tıbbi bir içerik değilse.
 
     Sana verilen metin aşağıdadır. Lütfen sadece bu üç kategoriden birini seçerek yanıt ver.
 
@@ -49,14 +50,24 @@ def node_router(state: GraphState) -> dict:
 def node_extract_mri(state: GraphState) -> dict:
     """MR formuna göre veri çıkarır."""
     print(f"--- DÜĞÜM (Hasta: {state['patient_name']}): Extract MRI ---")
-    extraction_chain = get_extraction_chain(llm, FormMRI)
+    # Not implemented: keeping placeholder to avoid breaking existing workflow if MRI still used.
+    extraction_chain = get_extraction_chain(llm, FormUstBatinBT)
     result = extraction_chain.invoke(state["text_chunk"])
     return {"extracted_data": result.dict()}
 
 def node_extract_blood_test(state: GraphState) -> dict:
     """Kan Tahlili formuna göre veri çıkarır."""
     print(f"--- DÜĞÜM (Hasta: {state['patient_name']}): Extract Blood Test ---")
-    extraction_chain = get_extraction_chain(llm, FormBloodTest)
+    # Not implemented: reuse the upper abdomen CT schema to keep structured output if needed.
+    extraction_chain = get_extraction_chain(llm, FormUstBatinBT)
+    result = extraction_chain.invoke(state["text_chunk"])
+    return {"extracted_data": result.dict()}
+
+
+def node_extract_ust_batin_bt(state: GraphState) -> dict:
+    """Üst Batın BT formuna göre veri çıkarır."""
+    print(f"--- DÜĞÜM (Hasta: {state['patient_name']}): Extract Üst Batın BT ---")
+    extraction_chain = get_extraction_chain(llm, FormUstBatinBT)
     result = extraction_chain.invoke(state["text_chunk"])
     return {"extracted_data": result.dict()}
 
