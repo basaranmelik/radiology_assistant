@@ -3,9 +3,8 @@ from typing import Type
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
 from dotenv import load_dotenv
-
 from config import GEMINI_MODEL_NAME
-from schemas.form_schemas import FormMRI,FormBloodTest
+from schemas.form_schemas import FormUstBatinBT,FormAltBatinBT,FormToraksBT,FormKontrastToraksBT,FormAyakBilekBT,FormBeyinBT, FormLomberBT
 from config import FORM_TYPE
 
 load_dotenv()

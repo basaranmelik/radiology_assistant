@@ -4,10 +4,15 @@ from huggingface_hub.inference._generated.types import AutomaticSpeechRecognitio
 from dotenv import load_dotenv
 load_dotenv()
 
+
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=os.environ["HF_TOKEN"],
+)
+
 if "HF_TOKEN" not in os.environ:
     raise ValueError("Please add your Hugging Face API key to an .env file or environment variable with the name 'HF_TOKEN'.")
 
-client = InferenceClient(token=os.environ.get("HF_TOKEN"))
 
 def transcribe_audio(audio_path:str,model:str)->str:
     if not os.path.exists(audio_path):

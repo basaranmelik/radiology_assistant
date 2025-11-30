@@ -8,5 +8,6 @@ OUTPUT_DIR=BASE_DIR/"data"/"output"
 ORCHESTRATOR_OUTPUT_DIR = OUTPUT_DIR/"orchestrator"
 
 GEMINI_MODEL_NAME = "gemini-2.5-pro"
-WHISPER_MODEL_NAME = "openai/whisper-large-v3"
-FORM_TYPE = Literal["mri","blood_test","undefined"]
+WHISPER_MODEL_NAME = "openai/whisper-large-v3-turbo"
+FORM_TYPE = Literal["ust_batin","alt_batin","toraks","kontrast_toraks","beyinbt","lomber","ayak_bilek","undefined"]
+    

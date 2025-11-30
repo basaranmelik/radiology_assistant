@@ -66,7 +66,7 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
 ║ 3. Rapor Üretme Agent'ı (LangGraph ile kuruldu)    ║
 ║                                                    ║
 ║      ┌──────────────────┐                          ║
-║      │ Router (LLM)     │--> 'mri', 'blood_test'   ║
+║      │ Router (LLM)     │--> 'toraks', 'kontrast_toraks', 'ust_batin', 'alt_batin', 'ayak_bilek','beyin' vb.   ║
 ║      └────────┬─────────┘                          ║
 ║               │ (Koşullu Yönlendirme)              ║
 ║      ┌────────┴────────┐                           ║
@@ -195,3 +195,14 @@ data/output/orchestrator
 
 
 
+#mp4 not supported
+Content type "audio/mp4" not supported.
+                Supported content types are:
+                application/json, application/json; charset=UTF-8, text/csv, text/plain, image/png, image/jpeg, image/jpg, image/tiff, image/bmp, image/gif, image/webp, image/x-image, audio/x-flac, audio/flac, audio/mpeg, audio/x-mpeg-3, audio/wave, audio/wav, audio/x-wav, audio/ogg, audio/x-audio, audio/webm, audio/webm;codecs=opus, audio/AMR, audio/amr, audio/AMR-WB, audio/AMR-WB+, audio/m4a, audio/x-m4a  
+Tam Transkript Alındı.
+
+-- 
+
+normal olan bulgular okunmadığında rapora eklenmiyor.
+
+bazı kelimeler yanlış okunuyor.

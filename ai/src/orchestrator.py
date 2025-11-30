@@ -30,15 +30,15 @@ def run_orchestrator(audio_path: str):
     chunking_chain = llm.with_structured_output(TranscriptAnalysis)
     
     prompt = f"""
-    Senin görevin, aşağıdaki karmaşık tıbbi metni analiz etmektir.
+    Senin görevin, verilen karmaşık tıbbi BT rapor metnini analiz etmektir.
     Metindeki tüm farklı hastaları ve onlarla ilgili BÜTÜN bilgileri ayıklamalısın.
     
     Şu adımları izle:
     1. Metinde adı geçen her bir benzersiz hastayı (örn: 'Ahmet Yılmaz') bul.
-    2. Her hasta için, metnin farklı yerlerinde dağınık halde bulunan, o hastaya ait TÜM cümleleri topla.
+    2. Metinde tıbbi BT terimi olması gerekirken yanlış transkript edilen terimleri düzelt.
     3. Topladığın bu cümleleri, her hasta için tek bir metin bloğu olacak şekilde birleştir.
     
-    Çıktın, 'TranscriptAnalysis' şemasına uygun bir JSON formatında olmalıdır. 'patient_name' ve 'related_text' alanlarının her ikisinin de dolu olduğundan emin ol.
+    Çıktın, 'TranscriptAnalysis' şemasına uygun bir JSON formatında olmalıdır.
 
     İşlenecek Transkript:
     ---
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--audio_file", 
         type=str, 
-        help="İşlenecek ses dosyasının tam yolu. Örn: data/audio/orchestrator_test.mp3"
+        help="İşlenecek ses dosyasının tam yolu. Örn: data/audio/orchestrator_test.mp3 veya data/audio/toraks_kontrastsız.ogg"
     )
     args = parser.parse_args()
     run_orchestrator(args.audio_file)
