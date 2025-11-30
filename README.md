@@ -13,7 +13,7 @@ Bu dikteler sırasında:
 - Daha önce bahsedilen bir hastaya “geri dönüş” yapılabilir.  
 
 Bu **karmaşık ve doğrusal olmayan** ses kayıtlarını manuel olarak deşifre etmek oldukça zaman alıcıdır.  
-Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından **hasta bazında ayrıştırılmış, sınıflandırılmış ve yapılandırılmış tıbbi raporlar** üretmeyi hedefler.
+Bu proje, bu süreci **otomatik hale getirerek**, tek bir ses kaydından **hasta bazında ayrıştırılmış, sınıflandırılmış ve yapılandırılmış tıbbi raporlar** üretmeyi hedefler.
 
 ---
 
@@ -21,6 +21,12 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
 
 - **🎧 Tek Ses Dosyasından Çoklu Rapor:**  
   Birden fazla hastanın bilgisini içeren tek bir uzun ses dosyasını işleyebilir.
+
+- **🌐 Web Arayüzü (Spring Boot):**
+  Kullanıcı dostu arayüz üzerinden ses dosyası yükleme ve sonuç görüntüleme.
+
+- **🔊 Geniş Format Desteği:**
+  MP3, OGG, WAV ve diğer yaygın ses formatlarını destekler.
 
 - **🧩 Akıllı Gruplama:**  
   Aynı hastaya ait, farklı yerlerde bahsedilen bilgileri birleştirir.
@@ -30,7 +36,7 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
   - **Rapor Üretme Agent’ı (LangGraph):** Her metin bloğunu detaylı işleyip yapılandırılmış veriye dönüştürür.
 
 - **🩸 Otomatik Sınıflandırma:**  
-  Her hasta raporunun türünü (örneğin *MR Raporu*, *Kan Tahlili*) içerik analizine göre belirler.
+  Her hasta raporunun türünü (örneğin *Toraks*, *Batın*, *Beyin*, *Lomber*, *Ayak Bileği* vb.) içerik analizine göre belirler.
 
 - **🧱 Yapısal Veri Çıktısı:**  
   Pydantic şemalarıyla tutarlı ve temiz JSON formatı üretir.
@@ -44,7 +50,12 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
 
 ```text
     ┌─────────────────────────┐
-    │  Tek Ses Dosyası (.mp3) │
+    │  Web Arayüzü / Upload   │
+    └───────────┬─────────────┘
+                │
+                ▼
+    ┌─────────────────────────┐
+    │  Backend (Spring Boot)  │
     └───────────┬─────────────┘
                 │
                 ▼
@@ -62,27 +73,26 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
                 │ (Hasta A Metni), (Hasta B Metni), ...
                 │
                 ▼ (Her hasta metni için döngü)
-╔════════════════════════════════════════════════════╗
-║ 3. Rapor Üretme Agent'ı (LangGraph ile kuruldu)    ║
-║                                                    ║
-║      ┌──────────────────┐                          ║
-║      │ Router (LLM)     │--> 'toraks', 'kontrast_toraks', 'ust_batin', 'alt_batin', 'ayak_bilek','beyin' vb.   ║
-║      └────────┬─────────┘                          ║
-║               │ (Koşullu Yönlendirme)              ║
-║      ┌────────┴────────┐                           ║
-║      ▼                 ▼                           ║
-║ ┌────────────────┐ ┌──────────────────┐            ║
-║ │ MRI            │ │  Kan Tahlili     │            ║
-║ │  Veri Çıkarı   │ │  Veri Çıkarıcı   │            ║
-║ │ (LLM + Şema)   │ │                  │            ║
-║ └───────┬────────┘ └────────┬─────────┘            ║
-║         │                  │                       ║
-║         └────────┬─────────┘                       ║
-║                  ▼                                 ║
-║      ┌──────────────────┐                          ║
-║      │ Yapısal JSON Veri│                          ║
-║      └──────────────────┘                          ║
-╚════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ 3. Rapor Üretme Agent'ı (LangGraph ile kuruldu)                              ║
+║                                                                              ║
+║      ┌──────────────────┐                                                    ║
+║      │ Router (LLM)     │--> 'toraks', 'kontrast_toraks', 'ust_batin',       ║
+║      └────────┬─────────┘    'alt_batin', 'ayak_bilek', 'beyin', 'lomber'    ║
+║               │ (Koşullu Yönlendirme)                                        ║
+║               ▼                                                              ║
+║       ┌────────────────┐                                                     ║
+║       │ İlgili Form    │                                                     ║
+║       │  Veri Çıkarıcı │                                                     ║
+║       │ (LLM + Şema)   │                                                     ║
+║       └───────┬────────┘                                                     ║
+║               │                                                              ║
+║               └                                                              ║
+║               ▼                                                              ║
+║      ┌──────────────────┐                                                    ║
+║      │ Yapısal JSON Veri│                                                    ║
+║      └──────────────────┘                                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
                 │
                 ▼
 ┌───────────────────────────────┐
@@ -94,11 +104,11 @@ Bu proje, bu süreci **tamamen otomatik hale getirerek**, tek bir ses kaydından
 
 | Katman | Teknoloji / Kütüphane |
 |--------|------------------------|
-| **Orkestrasyon & Agent Mantığı** | LangChain, LangGraph |
+| **Frontend & Backend** | Java Spring Boot, Thymeleaf, Bootstrap |
+| **Orkestrasyon & Agent Mantığı** | Python, LangChain, LangGraph |
 | **Dil Modelleri (LLM)** | Google Gemini Pro |
 | **Ses-Metin Çevrimi (S2T)** | Hugging Face Whisper |
 | **Veri Yapılandırma (Schema)** | Pydantic |
-| **Programlama Dili** | Python 3.10+ |
 
 ---
 
@@ -110,22 +120,20 @@ git clone https://github.com/bedirhan420/radiology_assistant.git
 cd radiology_assistant
 ```
 
-### 2. Sanal Ortam Oluşturun ve Aktif Edin
-
+### 2. Python Ortamını Hazırlayın (AI Modülü)
 ```bash
+# Conda ortamı oluşturun
 conda create -n radiology_assistant python=3.12.11
 conda activate radiology_assistant
-```
 
-### 3. Gerekli Kütüphaneleri Yükleyin
-
-```bash
+# Bağımlılıkları yükleyin
+cd ai
 pip install -r requirements.txt
+cd ..
 ```
 
-## 4. API Anahtarlarını Ayarlayın
-
-Ana dizinde .env dosyası oluşturun ve aşağıdaki içeriği ekleyin:
+### 3. API Anahtarlarını Ayarlayın
+Ana dizinde `.env` dosyası oluşturun ve aşağıdaki içeriği ekleyin:
 
 ```bash
 # Google AI Studio'dan alınacak: https://aistudio.google.com/app/apikey
@@ -134,30 +142,28 @@ GOOGLE_API_KEY="BURAYA_GOOGLE_API_ANAHTARINIZI_YAPISTIRIN"
 # Hugging Face'ten alınacak: https://huggingface.co/settings/tokens
 HF_TOKEN="hf_BURAYA_HUGGINGFACE_TOKENINI_YAPISTIRIN"
 ```
+
+### 4. Backend (Spring Boot) Çalıştırın
+```bash
+cd backend
+mvn spring-boot:run
+```
+Uygulama `http://localhost:8080` adresinde çalışacaktır.
+
 ---
 
-# 🧩 Nasıl Çalıştırılır?
-## 1. Ses Dosyalarını Ekleyin
+# 🧩 Nasıl Kullanılır?
 
-İşlemek istediğiniz .mp3 ses dosyalarını şu klasöre yerleştirin:
+1. Tarayıcınızda `http://localhost:8080` adresine gidin.
+2. "Ses Dosyası Seçin" butonuna tıklayarak bilgisayarınızdan bir ses dosyası (.mp3, .ogg vb.) seçin.
+3. "Yükle ve Dönüştür" butonuna tıklayın.
+4. İşlem tamamlandığında sonuç ekranda görüntülenecektir.
 
+Alternatif olarak Python modülünü doğrudan komut satırından da çalıştırabilirsiniz:
 ```bash
-data/audio/
+python ai/src/orchestrator.py --audio_file data/audio/sizin_ses_dosyaniz.mp3
 ```
 
-## 2. Orkestratörü Çalıştırın
-
-```bash
-python src/orchestrator.py data/audio/sizin_ses_dosyaniz.mp3
-```
-
-## 3. Çıktıları Kontrol Edin
-
-İşlem tamamlandığında aşağıdaki dizinde her hasta için oluşturulan .json dosyalarını bulabilirsiniz:
-
-```bash
-data/output/orchestrator
-```
 ---
 
 # 📂 Dosya Yapısı
@@ -165,44 +171,25 @@ data/output/orchestrator
 ```text
 /radiology_assistant/
 │-- .env
-│-- requirements.txt
 │-- README.md
 │
-│-- /data/
-│   │-- /audio/
-│   │-- /output/
+│-- /ai/ (Python AI Modülü)
+│   │-- requirements.txt
+│   │-- /data/
+│   │-- /src/
+│       │-- /graph/
+│       │-- /schemas/
+│       │-- /tools/
+│       │-- config.py
+│       │-- orchestrator.py
+│       │-- main.py
 │
-│-- /src/
-│   │-- /graph/
-│   │   │-- state.py
-│   │   │-- nodes.py
-│   │   │-- workflow.py
-│   │
-│   │-- /schemas/
-│   │   │-- form_schemas.py
-│   │
-│   │-- /tools/
-│   │   │-- s2t.py
-│   │   │-- llm_calls.py
-│   │
-│   │-- config.py
-│   │-- orchestrator.py
+│-- /backend/ (Java Spring Boot)
+│   │-- pom.xml
+│   │-- /src/
+│       │-- /main/
+│           │-- /java/
+│           │-- /resources/
+│               │-- /static/css/
+│               │-- /templates/
 ```
-
-
-
-
-
-
-
-#mp4 not supported
-Content type "audio/mp4" not supported.
-                Supported content types are:
-                application/json, application/json; charset=UTF-8, text/csv, text/plain, image/png, image/jpeg, image/jpg, image/tiff, image/bmp, image/gif, image/webp, image/x-image, audio/x-flac, audio/flac, audio/mpeg, audio/x-mpeg-3, audio/wave, audio/wav, audio/x-wav, audio/ogg, audio/x-audio, audio/webm, audio/webm;codecs=opus, audio/AMR, audio/amr, audio/AMR-WB, audio/AMR-WB+, audio/m4a, audio/x-m4a  
-Tam Transkript Alındı.
-
--- 
-
-normal olan bulgular okunmadığında rapora eklenmiyor.
-
-bazı kelimeler yanlış okunuyor.
